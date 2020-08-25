@@ -114,7 +114,7 @@ def notify(course):
             The index number of a course. str.
 
     Raises:
-        Exception: Mailgun failed to send email(s).
+        Exception: Mailgun failed to send an email.
     """
     # Construct WebReg easy registration link from config parameters
     config.QUERY_PARAMS_WEBREG["indexList"] = course
@@ -149,6 +149,7 @@ def cron():
 
     Raises:
         Exception: SOC API failed to retrieve open sections.
+        Exception: No desired courses remaining. Shutting down.
     """
     set_timezone()
     if not check_time_in_bounds():
@@ -164,7 +165,7 @@ def cron():
     open_courses = resp.json()
     desired_courses = {course for course in config.DESIRED_COURSES}
     if not desired_courses:
-        raise Exception("No desired courses. Shutting down.")
+        raise Exception("No desired courses remaining. Shutting down.")
     for course in desired_courses:
         if check_course_is_open(course, open_courses):
             notify(course)
