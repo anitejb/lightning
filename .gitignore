@@ -1,0 +1,9 @@
+# Config
+config.py
+
+# Virtual environment
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
