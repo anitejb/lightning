@@ -60,5 +60,7 @@ Make sure you have all of the necessary [requirements](#requirements) before get
 Copyright (c) 2020 Anitej Biradar. Released under the MIT License. See
 [LICENSE](LICENSE) for details.
 
+Questions? Reach out to [lightning@anitejb.dev](mailto:lightning@anitejb.dev), and I'll try to get back to you lightning fast!
+
 ## Disclaimer
 Lightning is not affiliated, associated, authorized, endorsed by, or in any way officially connected with Rutgers University, or any of its subsidiaries or its affiliates.
