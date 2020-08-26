@@ -71,7 +71,7 @@ def check_time_in_bounds():
 def check_course_is_open(course, open_sections):
     """Check if a course is currently open.
 
-    Given an index number of a couse, check if it is in the list of
+    Given an index number of a course, check if it is in the list of
     open courses. Implemented with binary search.
 
     Args:
