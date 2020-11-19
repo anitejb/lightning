@@ -1,4 +1,5 @@
 # Lightning
+![Version](https://img.shields.io/badge/version-0.0.1-blue)
 
 ## Table of Contents
 - [Overview](#overview)
@@ -26,7 +27,7 @@ The project is structured as follows. Only `sniper.py` is actually required for 
 ## Requirements
 The following requirements are necessary in order to set up and use Lightning.
 
-- Python (v3.6.5 and above) - get the latest version [here](https://www.python.org/downloads/).
+- Python (v3.8.2 and above) - get the latest version [here](https://www.python.org/downloads/).
 - Mailgun - sign up for an account [here](https://mailgun.com/).
 
 ## Getting Started
@@ -38,15 +39,15 @@ Make sure you have all of the necessary [requirements](#requirements) before get
 0. Enter the working directory.
     - `cd ./lightning`
 0. Create a virtual environment.
-    - `python -m venv ./venv`
+    - `python3 -m venv ./venv`
 0. Activate the virtual environment.
     - For Windows users: `venv\Scripts\activate`
     - For Linux/Mac users: `source venv/bin/activate`
 0. Install necessary dependencies.
-    - `pip install -r requirements.txt`
+    - `pip3 install -r requirements.txt`
 0. Create a new file called `config.py` and copy the contents of `example.config.py` into it.
 0. Follow instructions in `config.py` and fill in the specified fields.
-0. Run `python sniper.py` to launch Lightning.
+0. Run `python3 sniper.py` to launch Lightning.
 
 ## Helpful Tips
 
