@@ -9,6 +9,7 @@ __author__ = "Anitej Biradar (@anitejb)"
 __license__ = "MIT"
 
 from datetime import datetime
+from pytz import timezone
 import time
 from urllib.parse import urlencode, quote
 
@@ -17,37 +18,6 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
 
 import config
-
-# Account for Daylight Savings
-DST_START = datetime(config.YEAR, 3, 8).date()  # 2nd Sunday in March
-DST_END = datetime(config.YEAR, 11, 1).date()  # 1st Sunday in November
-CURRENT_DATE = None
-TIMEZONE = None
-
-# Construct API URL from config parameters
-PARAMS_SOC = urlencode(config.QUERY_PARAMS_SOC_API, quote_via=quote)
-API_URL = f"http://sis.rutgers.edu/soc/api/openSections.gzip?{PARAMS_SOC}"
-
-# WebReg is closed between 2:00 AM and 6:30 AM (times in seconds)
-WEBREG_CLOSED = (3600 * 2, 3600 * 6 + 60 * 30)
-
-
-def set_timezone():
-    """Set TIMEZONE based on CURRENT_DATE.
-
-    Check if current date is in Daylight Savings Time, and set
-    TIMEZONE accordingly. Only check for DST if CURRENT_DATE has
-    changed since the last check.
-    """
-    global CURRENT_DATE, TIMEZONE
-    if datetime.utcnow().date() == CURRENT_DATE:
-        return
-
-    CURRENT_DATE = datetime.utcnow().date()
-    if DST_START < CURRENT_DATE < DST_END:
-        TIMEZONE = "EDT"
-    else:
-        TIMEZONE = "EST"
 
 
 def check_time_in_bounds():
@@ -59,13 +29,13 @@ def check_time_in_bounds():
     Returns:
         A bool for whether or not the current time is acceptable.
     """
-    if TIMEZONE == "EST":
-        zero = 18000  # 5 hours offset for EST (UTC -5), in seconds
-    elif TIMEZONE == "EDT":
-        zero = 14400  # 4 hours offset for EDT (UTC -4), in seconds
+    # WebReg is down [2:00 AM, 6:00 AM)
+    WEBREG_DOWN_START = datetime(1970, 1, 1, 2, 00, tzinfo=timezone("US/Eastern")).time()
+    WEBREG_DOWN_END = datetime(1970, 1, 1, 6, 00, tzinfo=timezone("US/Eastern")).time()
 
-    now = (time.time() % 86400) - zero  # seconds since midnight, current day
-    return now < WEBREG_CLOSED[0] or WEBREG_CLOSED[1] < now
+    curr_time = datetime.now(timezone("US/Eastern")).time()
+
+    return curr_time < WEBREG_DOWN_START or WEBREG_DOWN_END <= curr_time
 
 
 def check_course_is_open(course, open_sections):
@@ -151,11 +121,14 @@ def cron():
         Exception: SOC API failed to retrieve open sections.
         Exception: No desired courses remaining. Shutting down.
     """
-    set_timezone()
     if not check_time_in_bounds():
         return
 
-    resp = requests.get(API_URL)
+    # Construct API URL from config parameters
+    params_soc = urlencode(config.QUERY_PARAMS_SOC_API, quote_via=quote)
+    api_url = f"http://sis.rutgers.edu/soc/api/openSections.gzip?{params_soc}"
+
+    resp = requests.get(api_url)
     if resp.status_code != 200:
         print("Error with SOC API request")
         print("Status Code:", resp.status_code)
