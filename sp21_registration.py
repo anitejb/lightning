@@ -1,82 +1,56 @@
 import time
-from urllib.parse import urlencode, quote
 
+from apscheduler.events import EVENT_JOB_ERROR
+from apscheduler.schedulers.blocking import BlockingScheduler
 import json
 import pyrebase
-import requests
 
 import config
+from soc import get_open_sections, check_section_is_open
 
-firebase = pyrebase.initialize_app(config.FIREBASE)
-db = firebase.database()
 
-# Construct API URL from config parameters
-PARAMS_SOC = urlencode(config.QUERY_PARAMS_SOC_API, quote_via=quote)
-API_URL = f"http://sis.rutgers.edu/soc/api/openSections.gzip?{PARAMS_SOC}"
+def update_db(db, all_sections, open_sections):
+    timestamp = int(time.time())
 
-resp = requests.get(API_URL)
-if resp.status_code != 200:
-    print("Error with SOC API request")
-    print("Status Code:", resp.status_code)
-    print("Text:", resp.text)
-    raise Exception("SOC API failed to retrieve open sections.")
+    try:
+        current_db = dict(db.get().val())
+    except:
+        current_db = dict()
+    latest_db = dict.fromkeys(all_sections, {})
 
-with open("sp21/allSections.json", "r") as f:
-    all_courses = json.load(f)
-
-def check_course_is_open(course):
-    """Check if a course is currently open.
-
-    Given an index number of a course, check if it is in the list of
-    open courses. Implemented with binary search.
-
-    Args:
-        course:
-            The index number of a course. str.
-        open_sections:
-            The list of all open course index numbers. list of strs.
-
-    Returns:
-        A bool for whether or not the course is open.
-    """
-    lo = 0
-    hi = len(all_courses) - 1
-    while lo <= hi:
-        mid = (lo + hi) // 2
-        if all_courses[mid] == course:
-            return True
-        if all_courses[mid] > course:
-            hi = mid - 1
+    for section in all_sections:
+        if check_section_is_open(section, open_sections):
+            latest_db[section]["status"] = 1
+            latest_db[section]["flip"] = current_db[section]["flip"] if section in current_db else []
+            if section not in current_db or current_db[section]["status"] == 0:
+                latest_db[section]["flip"].append(timestamp)
         else:
-            lo = mid + 1
-    return False
+            latest_db[section]["status"] = 0
+            latest_db[section]["flip"] = current_db[section]["flip"] if section in current_db else []
+            if section not in current_db or current_db[section]["status"] == 1:
+                latest_db[section]["flip"].append(timestamp)
 
-update_db = dict.fromkeys(all_courses, {})
-try:
-    current_db = dict(db.get().val())
-except:
-    current_db = dict()
+    db.update(latest_db)
 
-for course in all_courses:
-    if check_course_is_open(course):
-        update_db[course]["status"] = 1
-        update_db[course]["flip"] = current_db[course]["flip"] if course in current_db else []
-        if course not in current_db or current_db[course]["status"] == 0:
-            update_db[course]["flip"].append(int(time.time()))
-    else:
-        update_db[course]["status"] = 0
-        update_db[course]["flip"] = current_db[course]["flip"] if course in current_db else []
-        if course not in current_db or current_db[course]["status"] == 1:
-            update_db[course]["flip"].append(int(time.time()))
 
-db.update(update_db)
+def main():
+    db = pyrebase.initialize_app(config.FIREBASE).database()
+    with open("sp21/allSections.json", "r") as f:
+        all_sections = json.load(f)
+    open_sections = get_open_sections()
 
-# # Save all courses
-# import json
-# with open("sp21/courses.json") as f1, open("sp21/allSections.json", "w") as f2:
-#     soc = json.load(f1)
-#     all_sections = []
-#     for course in soc:
-#         for section in course["sections"]:
-#             all_sections.append(section["index"])
-#     f2.write(json.dumps(sorted(all_sections)))
+    update_db(db, all_sections, open_sections)
+
+
+def shutdown(event):
+    """Terminate cron job."""
+    if scheduler.running:
+        scheduler.shutdown(wait=False)
+
+
+if __name__ == "__main__":
+    # Set cron function to be executed in intervals of 10 minutes
+    scheduler = BlockingScheduler()
+    scheduler.add_listener(shutdown, EVENT_JOB_ERROR)
+    scheduler.add_job(main, "interval", minutes=1)
+    scheduler.start()
