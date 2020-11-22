@@ -16,7 +16,7 @@ def update_db(db, all_sections, open_sections):
         current_db = dict(db.get().val())
     except:
         current_db = dict()
-    latest_db = {section : dict() for section in all_sections}
+    latest_db = {section: dict() for section in all_sections}
 
     flipped_open = []
     flipped_closed = []
@@ -42,7 +42,9 @@ def update_db(db, all_sections, open_sections):
     latest_db["timestamps"] = current_db.get("timestamps", []) + [timestamp]
     db.update(latest_db)
 
-    print(f"Updated @ {int(time.time())} | Flipped Open: {flipped_open} | Flipped Closed: {flipped_closed}")
+    print(
+        f"Updated @ {int(time.time())} || Flipped Open: {flipped_open} || Flip Closed: {flipped_closed}"
+    )
 
 
 def main():
