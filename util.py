@@ -1,6 +1,9 @@
 """Utility functions."""
 
 import json
+import pyrebase
+
+import config
 
 
 def save_all_sections_sp21():
@@ -11,3 +14,11 @@ def save_all_sections_sp21():
             for section in course["sections"]:
                 all_sections.append(section["index"])
         f2.write(json.dumps(sorted(all_sections)))
+
+
+def clear_db():
+    db = pyrebase.initialize_app(config.FIREBASE).database()
+    db.remove()
+
+if __name__ == "__main__":
+    clear_db()
