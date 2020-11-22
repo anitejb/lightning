@@ -25,6 +25,7 @@ def get_section(section):
     return db.child(section).get().val()
 
 if __name__ == "__main__":
+    # save_all_sections_sp21()
     # clear_db()
     # print(get_section("07303"))
     # print(get_section("20724"))
