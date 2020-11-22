@@ -1,5 +1,6 @@
 """Core functions for interacting with Rutgers SOC."""
 
+import time
 from urllib.parse import urlencode, quote
 
 import requests
@@ -17,12 +18,20 @@ def get_open_sections():
     PARAMS_SOC = urlencode(config.QUERY_PARAMS_SOC_API, quote_via=quote)
     API_URL = f"http://sis.rutgers.edu/soc/api/openSections.gzip?{PARAMS_SOC}"
 
-    resp = requests.get(API_URL)
-    if resp.status_code != 200:
-        print("Error with SOC API request")
-        print("Status Code:", resp.status_code)
-        print("Text:", resp.text)
-        raise Exception("SOC API failed to retrieve open sections.")
+    count = 0
+    while count < 5:
+        try:
+            resp = requests.get(API_URL)
+            if resp.status_code != 200:
+                print("Error with SOC API request")
+                print("Status Code:", resp.status_code)
+                print("Text:", resp.text)
+                raise Exception("SOC API failed to retrieve open sections.")
+            break
+        except requests.exceptions.ConnectionError:
+            print(f"ConnectionError @ {int(time.time())}")
+            count += 1
+            time.sleep(10)
 
     return resp.json()
 
