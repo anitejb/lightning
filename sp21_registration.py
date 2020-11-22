@@ -44,6 +44,7 @@ def main():
     open_sections = get_open_sections()
 
     update_db(db, all_sections, open_sections)
+    print(f"Updated @ {int(time.time())}")
 
 
 def shutdown(event):
