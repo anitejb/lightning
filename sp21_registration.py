@@ -21,12 +21,16 @@ def update_db(db, all_sections, open_sections):
     for section in all_sections:
         if check_section_is_open(section, open_sections):
             latest_db[section]["status"] = 1
-            latest_db[section]["flip"] = current_db[section]["flip"] if section in current_db else []
+            latest_db[section]["flip"] = (
+                current_db[section]["flip"] if section in current_db else []
+            )
             if section not in current_db or current_db[section]["status"] == 0:
                 latest_db[section]["flip"].append(timestamp)
         else:
             latest_db[section]["status"] = 0
-            latest_db[section]["flip"] = current_db[section]["flip"] if section in current_db else []
+            latest_db[section]["flip"] = (
+                current_db[section]["flip"] if section in current_db else []
+            )
             if section not in current_db or current_db[section]["status"] == 1:
                 latest_db[section]["flip"].append(timestamp)
 

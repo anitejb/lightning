@@ -6,6 +6,7 @@ import requests
 
 import config
 
+
 def get_open_sections():
     """Retrieve all open section index numbers from SOC.
 

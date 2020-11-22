@@ -30,12 +30,12 @@ def check_time_in_bounds():
         A bool for whether or not the current time is within bounds.
     """
     # WebReg is down [2:00 AM, 6:00 AM)
-    WEBREG_DOWN_START = datetime(1970, 1, 1, 2, 00, tzinfo=timezone("US/Eastern")).time()
-    WEBREG_DOWN_END = datetime(1970, 1, 1, 6, 00, tzinfo=timezone("US/Eastern")).time()
+    WEBREG_DOWN = datetime(1970, 1, 1, 2, 00, tzinfo=timezone("US/Eastern")).time()
+    WEBREG_UP = datetime(1970, 1, 1, 6, 00, tzinfo=timezone("US/Eastern")).time()
 
     curr_time = datetime.now(timezone("US/Eastern")).time()
 
-    return curr_time < WEBREG_DOWN_START or WEBREG_DOWN_END <= curr_time
+    return curr_time < WEBREG_DOWN or WEBREG_UP <= curr_time
 
 
 def notify(section):
