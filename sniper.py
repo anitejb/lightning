@@ -9,11 +9,11 @@ __author__ = "Anitej Biradar (@anitejb)"
 __license__ = "MIT"
 
 from datetime import datetime
-from pytz import timezone
 from urllib.parse import urlencode, quote
 
 from apscheduler.events import EVENT_JOB_ERROR
 from apscheduler.schedulers.blocking import BlockingScheduler
+from pytz import timezone
 import requests
 
 import config

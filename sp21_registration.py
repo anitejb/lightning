@@ -1,8 +1,8 @@
+import json
 import time
 
 from apscheduler.events import EVENT_JOB_ERROR
 from apscheduler.schedulers.blocking import BlockingScheduler
-import json
 import pyrebase
 
 import config
