@@ -53,6 +53,7 @@ def shutdown(event):
 
 
 if __name__ == "__main__":
+    print(f"Started @ {int(time.time())}")
     # Set cron function to be executed in intervals of 10 minutes
     scheduler = BlockingScheduler()
     scheduler.add_listener(shutdown, EVENT_JOB_ERROR)
