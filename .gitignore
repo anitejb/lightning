@@ -1,5 +1,5 @@
-# Config
-config.py
+# Local files
+\#*.py
 
 # Virtual environment
 venv/
