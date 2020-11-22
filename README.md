@@ -15,14 +15,19 @@ Lightning is a course sniper for real time monitoring of [Rutgers Schedule of Cl
 Built with [Python](https://www.python.org/), [Requests](https://requests.readthedocs.io/), [APScheduler](https://apscheduler.readthedocs.io/), [Mailgun](https://www.mailgun.com/), and <3.
 
 ## Project Structure
-The project is structured as follows. Only `sniper.py` is actually required for Lightning to function, everything else is supplementary for informational purposes.
+The project is structured as follows.
 
-- `sniper.py`: Contains the cron function that continuously monitors Rutgers SOC for openings.
+- `soc.py`: Contains functions to interact with and process data from Rutgers SOC.
+- `sniper.py`: Contains the cron function that continuously monitors Rutgers SOC for openings and sends notifications.
+- `util.py`: Contains utility functions.
 - `test_processing.py`: Contains time comparison tests between different lookup methods to determine most efficient handling of API response.
-- `sample_api_responses/`
+- `fa20/`
     - `courses.gzip`: Sample response from `https://sis.rutgers.edu/soc/api/courses.gzip?year=2020&term=9&campus=NB` (currently unused)
     - `courses.json`: Same content as `courses.gzip`, but formatted nicely :)
     - `openSections.gzip`: Sample response from `https://sis.rutgers.edu/soc/api/openSections.gzip?year=2020&term=9&campus=NB`
+- `sp21/`
+    - `courses.json`: Sample response from `https://sis.rutgers.edu/soc/api/courses.gzip?year=2021&term=1&campus=NB`
+    - `openSections.gzip`: Sample response from `https://sis.rutgers.edu/soc/api/openSections.gzip?year=2021&term=1&campus=NB`
 
 ## Requirements
 The following requirements are necessary in order to set up and use Lightning.
