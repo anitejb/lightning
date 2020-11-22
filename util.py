@@ -20,5 +20,11 @@ def clear_db():
     db = pyrebase.initialize_app(config.FIREBASE).database()
     db.remove()
 
+def get_section(section):
+    db = pyrebase.initialize_app(config.FIREBASE).database()
+    return db.child(section).get().val()
+
 if __name__ == "__main__":
-    clear_db()
+    # clear_db()
+    # print(get_section("07303"))
+    # print(get_section("20724"))
