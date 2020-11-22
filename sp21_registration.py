@@ -34,6 +34,7 @@ def update_db(db, all_sections, open_sections):
             if section not in current_db or current_db[section]["status"] == 1:
                 latest_db[section]["flip"].append(timestamp)
 
+    latest_db["timestamps"] = current_db.get("timestamps", []) + [timestamp]
     db.update(latest_db)
 
 

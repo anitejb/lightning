@@ -42,3 +42,11 @@ QUERY_PARAMS_WEBREG = {
     "semesterSelection": f"{TERM}{YEAR}",
     "indexList": None,
 }
+
+FIREBASE = {
+    "apiKey": os.getenv("LIGHTNING_FIREBASE_API_KEY"),
+    "authDomain": f'{os.getenv("LIGHTNING_FIREBASE_PROJECT_ID")}.firebaseapp.com',
+    "databaseURL": f'https://{os.getenv("LIGHTNING_FIREBASE_PROJECT_ID")}.firebaseio.com',
+    "projectId": os.getenv("LIGHTNING_FIREBASE_PROJECT_ID"),
+    "storageBucket": f'{os.getenv("LIGHTNING_FIREBASE_PROJECT_ID")}.appspot.com',
+}
