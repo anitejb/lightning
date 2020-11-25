@@ -22,18 +22,16 @@ def get_open_sections():
     while count < 5:
         try:
             resp = requests.get(API_URL)
-            if resp.status_code != 200:
-                print("Error with SOC API request")
-                print("Status Code:", resp.status_code)
-                print("Text:", resp.text)
-                raise Exception("SOC API failed to retrieve open sections.")
-            break
+            if resp.status_code == 200:
+                return resp.json()
+            print(f"Error with SOC API request: Status Code {resp.status_code}")
         except requests.exceptions.ConnectionError:
             print(f"ConnectionError @ {int(time.time())}")
-            count += 1
-            time.sleep(10)
 
-    return resp.json()
+        count += 1
+        time.sleep(10)
+
+    raise Exception("Max retries failed.")
 
 
 def check_section_is_open(section, open_sections):

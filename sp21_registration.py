@@ -58,9 +58,7 @@ class Registration:
         self.db.update(latest_db)
         self.current_db = latest_db
 
-        print(
-            f"Updated @ {int(time.time())} || Flipped Open: {flipped_open} || Flip Closed: {flipped_closed}"
-        )
+        print(f"Up @ {timestamp} || Open: {flipped_open} || Closed: {flipped_closed}")
 
     def main(self):
         open_sections = get_open_sections()
@@ -78,8 +76,8 @@ if __name__ == "__main__":
     registration = Registration()
     # Initial cron trigger
     registration.main()
-    # Set cron function to be executed in intervals of 10 minutes
+    # Set cron function to be executed in every 10 minutes in the hour
     scheduler = BlockingScheduler()
     scheduler.add_listener(shutdown, EVENT_JOB_ERROR)
-    scheduler.add_job(registration.main, "interval", minutes=10)
+    scheduler.add_job(registration.main, "cron", minute="*/10")
     scheduler.start()
