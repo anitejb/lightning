@@ -17,42 +17,46 @@ class Registration:
         except:
             self.current_db = dict()
 
-        with open("sp21/allSections.json", "r") as f:
+        with open("sp21-2020-12-03-1900/allSections.json", "r") as f:
             self.all_sections = json.load(f)
 
     def update_db(self, open_sections):
+
+        all_sections_set = set(self.all_sections)
+        open_sections_set = set(open_sections)
+
         timestamp = int(time.time())
-        latest_db = {section: dict() for section in self.all_sections}
+        latest_db = {section: dict() for section in all_sections_set.union(open_sections_set)}
         flipped_open = []
         flipped_closed = []
 
-        for section in self.all_sections:
-            if check_section_is_open(section, open_sections):
-                latest_db[section]["status"] = 1
-                latest_db[section]["flip"] = (
-                    self.current_db[section]["flip"]
-                    if section in self.current_db
-                    else []
-                )
-                if (
-                    section not in self.current_db
-                    or self.current_db[section]["status"] == 0
-                ):
-                    latest_db[section]["flip"].append(timestamp)
-                    flipped_open.append(section)
-            else:
-                latest_db[section]["status"] = 0
-                latest_db[section]["flip"] = (
-                    self.current_db[section]["flip"]
-                    if section in self.current_db
-                    else []
-                )
-                if (
-                    section not in self.current_db
-                    or self.current_db[section]["status"] == 1
-                ):
-                    latest_db[section]["flip"].append(timestamp)
-                    flipped_closed.append(section)
+        for section in open_sections:
+            latest_db[section]["status"] = 1
+            latest_db[section]["flip"] = (
+                self.current_db[section]["flip"]
+                if section in self.current_db
+                else []
+            )
+            if (
+                section not in self.current_db
+                or self.current_db[section]["status"] == 0
+            ):
+                latest_db[section]["flip"].append(timestamp)
+                flipped_open.append(section)
+
+        for section in all_sections_set - open_sections_set:
+            latest_db[section]["status"] = 0
+            latest_db[section]["flip"] = (
+                self.current_db[section]["flip"]
+                if section in self.current_db
+                else []
+            )
+            if (
+                section not in self.current_db
+                or self.current_db[section]["status"] == 1
+            ):
+                latest_db[section]["flip"].append(timestamp)
+                flipped_closed.append(section)
 
         latest_db["timestamps"] = self.current_db.get("timestamps", []) + [timestamp]
         self.db.update(latest_db)
